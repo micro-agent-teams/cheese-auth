@@ -28,4 +28,8 @@ RUN pnpm prisma generate
 
 WORKDIR /app/server
 
-CMD ["bash", "-c", "if [ ! -f \"FLAG_INIT\" ]; then touch FLAG_INIT \n pnpm prisma db push \n fi \n pnpm start"]
+# FLAG_INIT must live on volume-backed storage (FILE_UPLOAD_PATH), not the
+# container's own writable layer: a plain in-image flag resets on every
+# container recreation, silently re-running `prisma db push` and wiping any
+# tables added to the same database outside Prisma's own schema.
+CMD ["bash", "-c", "if [ ! -f \"${FILE_UPLOAD_PATH}/.flag_init\" ]; then mkdir -p \"${FILE_UPLOAD_PATH}\" && touch \"${FILE_UPLOAD_PATH}/.flag_init\" \n pnpm prisma db push \n fi \n pnpm start"]
