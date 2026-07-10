@@ -24,7 +24,11 @@ import { ConfigModule } from '@nestjs/config';
           process.env.EMAIL_SMTP_PORT ||
             (process.env.EMAIL_SMTP_SSL_ENABLE === 'true' ? '587' : '25'),
         ),
-        secure: process.env.EMAIL_SMTP_SSL_ENABLE,
+        // EMAIL_SMTP_SSL_ENABLE is a string env var; passing it directly made
+        // `secure` truthy for ANY non-empty value (including the literal
+        // string "false"), forcing implicit TLS on port 25 and breaking
+        // plaintext/STARTTLS delivery. Coerce to a real boolean.
+        secure: process.env.EMAIL_SMTP_SSL_ENABLE === 'true',
         auth: {
           user: process.env.EMAIL_SMTP_USERNAME,
           pass: process.env.EMAIL_SMTP_PASSWORD,
