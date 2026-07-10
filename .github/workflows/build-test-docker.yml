@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: sageseekersociety/cheese-auth
+  IMAGE_NAME: micro-agent-teams/cheese-auth
 
 jobs:
   build-and-push-image:
